@@ -1,0 +1,73 @@
+<f:layout name="Default" />
+
+<f:section name="content">
+<div class="typo3-dyntabmenu-divs">
+	<f:form action="create" name="formdata" object="{formdata}" class="wg-form">
+		<fieldset class="t3-form-palette-fieldset">
+			<h1>Subsite Generator</h1>
+			<p>This form generates a Subsite from the Subsite Template. It creates the necessary page-structure, a filemount and a backend user.</p>
+
+			<div class="field">
+				<label for="title">Subsite Title</label>
+				<br/>
+				<f:form.textfield property="title" name="title" id="title" placeholder="Title" size="20" />
+				<div class="clear"></div>
+			</div>
+			<div class="field">
+				<label for="description">Subdomain (Acronym)</label>
+				<br />
+				<f:form.textfield property="subdomain" name="subdomain" placeholder="acronym" size="20" />
+				<div class="clear"></div>
+			</div>
+
+			<h2>Associated Backend User</h2>
+			<div class="field">
+				<label for="u-name">Name</label>
+				<br/>
+				<f:form.textfield property="uName" name="uName" id="u-name" size="20" />
+				<div class="clear"></div>
+			</div>
+			<div class="field">
+				<label for="u-mail">E-Mail</label>
+				<br/>
+				<f:form.textfield property="uMail" name="uMail" id="u-mail" size="20"/>
+				<div class="clear"></div>
+			</div>
+			<div class="field">
+				<label for="u-account">Backend Login <em>(lowercase, no spaces)</em></label>
+				<br/>
+				<f:form.textfield property="uAccount" name="uAccount" id="u-account" size="20" placeholder="firstname.lastname"/>
+				<br>
+				<div class="clear"></div>
+			</div>
+			<div class="field">
+				<label for="u-password">Password</label>
+				<br/>
+				<f:form.textfield property="uPassword" name="uPassword" id="u-password" size="20" placeholder="password"/>
+				<div class="clear"></div>
+			</div>
+
+			<br/>
+			<f:form.button type="submit" class="t3-button inlineNewButton">Create subsite</f:form.button>
+		</fieldset>
+	</f:form>
+
+	<script type="text/javascript">
+		window.onload = function() {
+			function randomPassword(length) {
+				chars = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890";
+				pass = "";
+
+				for (var x = 0; x < length; x++) {
+					i = Math.floor(Math.random() * 62);
+					pass += chars.charAt(i);
+				}
+
+				return pass;
+			}
+
+			document.getElementById('u-password').value = randomPassword(8);
+		}
+	</script>
+</div>
+</f:section>

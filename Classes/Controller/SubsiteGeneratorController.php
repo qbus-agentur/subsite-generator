@@ -55,8 +55,11 @@ class SubsiteGeneratorController extends \TYPO3\CMS\Extbase\Mvc\Controller\Actio
      */
     protected function createAction($formdata)
     {
-        if (!isset($formdata['title'])) {
-            $this->redirect('new');
+        foreach (['title', 'subdomain', 'uAccount', 'uPassword'] as $field) {
+            if (!isset($formdata[$field]) || $formdata[$field] == '') {
+                $this->addFlashMessage('Not all required fields were set');
+                $this->redirect('new');
+            }
         }
 
         $status = $this->subsiteGeneratorService->create(

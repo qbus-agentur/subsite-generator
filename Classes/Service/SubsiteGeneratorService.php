@@ -62,7 +62,7 @@ class SubsiteGeneratorService
         $db->exec_UPDATEquery(
             'sys_domain',
             'pid=' . intval($rootPageId),
-            ['domainName' =>  $subdomain . '.' . $domainSuffix]
+            ['domainName' =>  $subdomain . $domainSuffix]
         );
 
         $storageRepository = $this->getStorageRepository();

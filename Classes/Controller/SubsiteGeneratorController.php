@@ -17,6 +17,11 @@ class SubsiteGeneratorController extends \TYPO3\CMS\Extbase\Mvc\Controller\Actio
     protected $subsiteGeneratorService;
 
     /**
+     * @var \Qbus\SubsiteGenerator\Service\ConfigurationService
+     */
+    protected $configurationService;
+
+    /**
      * @param  SubsiteGeneratorService $subsiteGeneratorService
      * @return void
      */
@@ -26,12 +31,22 @@ class SubsiteGeneratorController extends \TYPO3\CMS\Extbase\Mvc\Controller\Actio
     }
 
     /**
+     * @param  \Qbus\SubsiteGenerator\Service\ConfigurationService $configurationService
+     * @return void
+     */
+    public function injectConfigurationService(\Qbus\SubsiteGenerator\Service\ConfigurationService $configurationService)
+    {
+        $this->configurationService = $configurationService;
+    }
+
+    /**
      * action new
      *
      * @return void
      */
     protected function newAction()
     {
+        $this->view->assign('domainSuffix', $this->configurationService->get('domain_suffix'));
     }
 
     /**

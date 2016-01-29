@@ -115,8 +115,6 @@ class SubsiteGeneratorService
         $tce->copyTree = 99;
         $tce->process_cmdmap();
 
-        BackendUtility::setUpdateSignal('updatePageTree');
-
         return $tce->copyMappingArray_merged['pages'][$templateId];
     }
 

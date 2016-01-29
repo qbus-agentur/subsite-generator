@@ -12,7 +12,7 @@ if (!defined('TYPO3_MODE')) {
         'SubsiteGenerator' => 'new,create',
     ),
     array(
-        'access' => 'user,group',
+        'access' => 'admin',
         'icon'   => 'EXT:' . $_EXTKEY . '/ext_icon.gif',
         'labels' => 'LLL:EXT:' . $_EXTKEY . '/Resources/Private/Language/locallang.xlf',
     )

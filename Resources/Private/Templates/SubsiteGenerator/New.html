@@ -22,18 +22,6 @@
 
 			<h2>Associated Backend User</h2>
 			<div class="field">
-				<label for="u-name">Name</label>
-				<br/>
-				<f:form.textfield property="uName" name="uName" id="u-name" size="20" />
-				<div class="clear"></div>
-			</div>
-			<div class="field">
-				<label for="u-mail">E-Mail</label>
-				<br/>
-				<f:form.textfield property="uMail" name="uMail" id="u-mail" size="20"/>
-				<div class="clear"></div>
-			</div>
-			<div class="field">
 				<label for="u-account">Backend Login <em>(lowercase, no spaces)</em></label>
 				<br/>
 				<f:form.textfield property="uAccount" name="uAccount" id="u-account" size="20" placeholder="firstname.lastname"/>
@@ -44,6 +32,18 @@
 				<label for="u-password">Password</label>
 				<br/>
 				<f:form.textfield property="uPassword" name="uPassword" id="u-password" size="20" placeholder="password"/>
+				<div class="clear"></div>
+			</div>
+			<div class="field">
+				<label for="u-name">Name <em>(optional)</em></label>
+				<br/>
+				<f:form.textfield property="uName" name="uName" id="u-name" size="20" />
+				<div class="clear"></div>
+			</div>
+			<div class="field">
+				<label for="u-mail">E-Mail <em>(optional)</em></label>
+				<br/>
+				<f:form.textfield property="uMail" name="uMail" id="u-mail" size="20"/>
 				<div class="clear"></div>
 			</div>
 

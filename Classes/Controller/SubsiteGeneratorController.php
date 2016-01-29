@@ -47,7 +47,10 @@ class SubsiteGeneratorController extends \TYPO3\CMS\Extbase\Mvc\Controller\Actio
         $status = $this->subsiteGeneratorService->create(
             $formdata['title'],
             $formdata['subdomain'],
-            $formdata['uName'], $formdata['uPhone'], $formdata['uMail'], $formdata['uAccount'], $formdata['uPassword']
+            $formdata['uAccount'],
+            $formdata['uPassword'],
+            $formdata['uName'],
+            $formdata['uMail']
         );
 
         if ($status) {

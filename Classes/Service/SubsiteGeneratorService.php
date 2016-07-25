@@ -77,7 +77,7 @@ class SubsiteGeneratorService
 
         $filemount = $this->addFileMount(
             'Subsite ' . $title,
-            $path,
+            '/' . $subdomain . '/',
             $storageUid
         );
         $begroup = $this->addBEGroup(

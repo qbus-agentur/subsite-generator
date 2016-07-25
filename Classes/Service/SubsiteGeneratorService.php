@@ -84,7 +84,8 @@ class SubsiteGeneratorService
             'Subsite ' . $title,
             [$filemount],
             [$baseGroupId],
-            [$rootPageId]
+            [$rootPageId],
+            'options.defaultUploadFolder = ' . $storageUid . ':' . $subdomain . '/'
         );
         $this->addBEUser(
             $uAccount,
@@ -143,9 +144,10 @@ class SubsiteGeneratorService
      * @param  array  $file_mounts
      * @param  array  $groups
      * @param  array  $db_mounts
+     * @param  string $tsconfig
      * @return string
      */
-    protected function addBEGroup($title, $file_mounts = [], $groups = [], $db_mounts = [])
+    protected function addBEGroup($title, $file_mounts = [], $groups = [], $db_mounts = [], $tsconfig = '')
     {
         $id = $this->allocateId('begroup' . $title);
 
@@ -154,6 +156,7 @@ class SubsiteGeneratorService
             'file_mountpoints' => implode(',', $file_mounts),
             'subgroup' => implode(',', $groups),
             'db_mountpoints' => implode(',', $db_mounts),
+            'TSconfig' => $tsconfig,
             'pid' => 0,
         ];
 

@@ -1,7 +1,11 @@
 <?php
 namespace Qbus\SubsiteGenerator\Controller;
 
+use TYPO3\CMS\Backend\View\BackendTemplateView;
+use TYPO3\CMS\Extbase\Mvc\View\ViewInterface;
+use TYPO3\CMS\Lang\LanguageService;
 use Qbus\SubsiteGenerator\Service\SubsiteGeneratorService;
+
 
 /**
  * SubsiteGeneratorController
@@ -40,6 +44,13 @@ class SubsiteGeneratorController extends \TYPO3\CMS\Extbase\Mvc\Controller\Actio
     }
 
     /**
+     * BackendTemplateView Container
+     *
+     * @var BackendTemplateView
+     */
+    protected $defaultViewObjectName = BackendTemplateView::class;
+
+    /**
      * action new
      *
      * @return void
@@ -57,7 +68,11 @@ class SubsiteGeneratorController extends \TYPO3\CMS\Extbase\Mvc\Controller\Actio
     {
         foreach (['title', 'subdomain', 'uAccount', 'uPassword'] as $field) {
             if (!isset($formdata[$field]) || $formdata[$field] == '') {
-                $this->addFlashMessage('Not all required fields were set');
+                $this->addFlashMessage(
+                    'Not all required fields were set',
+                    '',
+                    \TYPO3\CMS\Core\Messaging\FlashMessage::ERROR
+                );
                 $this->redirect('new');
             }
         }
@@ -76,4 +91,59 @@ class SubsiteGeneratorController extends \TYPO3\CMS\Extbase\Mvc\Controller\Actio
         }
         $this->redirect('new');
     }
+
+    /**
+     * Initialize the view
+     *
+     * @param ViewInterface $view The view
+     */
+    protected function initializeView(ViewInterface $view)
+    {
+        if ($view === null) {
+            return;
+        }
+        /** @var BackendTemplateView $view */
+        parent::initializeView($view);
+        if ($view->getModuleTemplate() === null) {
+            return;
+        }
+        $view->getModuleTemplate()->getDocHeaderComponent()->setMetaInformation([]);
+
+        $lang = $this->getLanguageService();
+        $lang->includeLLFile('EXT:subsite_generator/Resources/Private/Language/locallang.xlf');
+        $this->shortcutName = $lang->getLL('module_index');
+
+        //$this->generateMenu();
+        $this->generateButtons();
+    }
+
+    /**
+     * Gets all buttons for the docheader
+     */
+    protected function generateButtons()
+    {
+        $buttonBar = $this->view->getModuleTemplate()->getDocHeaderComponent()->getButtonBar();
+        $moduleName = $this->request->getPluginName();
+        $getVars = $this->request->hasArgument('getVars') ? $this->request->getArgument('getVars') : [];
+        $setVars = $this->request->hasArgument('setVars') ? $this->request->getArgument('setVars') : [];
+        if (count($getVars) === 0) {
+            $modulePrefix = strtolower('tx_' . $this->request->getControllerExtensionName() . '_' . $moduleName);
+            $getVars = ['id', 'M', $modulePrefix];
+        }
+        $shortcutButton = $buttonBar->makeShortcutButton()
+            ->setModuleName($moduleName)
+            ->setGetVariables($getVars)
+            ->setDisplayName($this->shortcutName)
+            ->setSetVariables($setVars);
+        $buttonBar->addButton($shortcutButton);
+    }
+
+    /**
+     * @return LanguageService
+     */
+    protected function getLanguageService()
+    {
+        return $GLOBALS['LANG'];
+    }
+
 }

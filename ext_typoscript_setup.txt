@@ -1,8 +1,8 @@
 module.tx_subsitegenerator {
 	view {
-		templateRootPath = EXT:subsite_generator/Resources/Private/Templates/
-		partialRootPath = EXT:subsite_generator/Resources/Private/Partials/
-		layoutRootPath = EXT:subsite_generator/Resources/Private/Layouts/
+		templateRootPaths.0 = EXT:subsite_generator/Resources/Private/Templates/
+		partialRootPaths.0 = EXT:subsite_generator/Resources/Private/Partials/
+		layoutRootPaths.0 = EXT:subsite_generator/Resources/Private/Layouts/
 	}
 	persistence {
 		storagePid =

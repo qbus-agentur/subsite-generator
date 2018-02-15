@@ -1,0 +1,56 @@
+{
+    "name": "qbus/subsite-generator",
+    "type": "typo3-cms-extension",
+    "description": "Subsite Generator",
+    "keywords": [
+        "TYPO3",
+        "extension"
+    ],
+    "authors": [
+        {
+            "name": "Benjamin Franzke",
+            "email": "bfr@qbus.de",
+            "role": "Developer",
+            "homepage": "https://qbus.de"
+        }
+    ],
+    "license": "GPL-2.0+",
+    "require": {
+        "typo3/cms-core": "^8.7"
+    },
+    "autoload": {
+        "psr-4": {
+            "Qbus\\SubsiteGenerator\\": "Classes"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "Qbus\\SubsiteGenerator\\Tests\\": "Tests"
+        }
+    },
+    "replace": {
+        "subsite_generator": "self.version",
+        "typo3-ter/subsite_generator": "self.version"
+    },
+    "require-dev": {
+        "typo3/testing-framework": "^2.0",
+        "php-coveralls/php-coveralls": "^1.0",
+        "typo3/cms": "^8.7",
+        "phpstan/phpstan": "^0.9.1"
+    },
+    "config": {
+        "vendor-dir": ".build/vendor"
+    },
+    "extra": {
+        "typo3/cms": {
+            "cms-package-dir": "{$vendor-dir}/typo3/cms",
+            "web-dir": ".build/web"
+        },
+        "branch-alias": {
+            "dev-master": "2.0.x-dev"
+        }
+    },
+    "scripts": {
+        "post-autoload-dump": "mkdir -p .build/web/typo3conf/ext/ && ln -snf ../../../.. .build/web/typo3conf/ext/subsite_generator"
+    }
+}

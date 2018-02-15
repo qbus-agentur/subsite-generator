@@ -1,7 +1,15 @@
+{namespace be=TYPO3\CMS\Backend\ViewHelpers}
+{namespace belog=TYPO3\CMS\Belog\ViewHelpers}
+
 <f:layout name="Default" />
 
+<f:section name="headline">
+	<h1><f:translate key="moduleHeader" /></h1>
+</f:section>
+
 <f:section name="content">
-<div class="typo3-dyntabmenu-divs">
+	<f:flashMessages/>
+
 	<f:form action="create" name="formdata" object="{formdata}" class="wg-form">
 		<fieldset class="t3-form-palette-fieldset">
 			<h1>Subsite Generator</h1>
@@ -70,5 +78,4 @@
 			document.getElementById('u-password').value = randomPassword(8);
 		}
 	</script>
-</div>
 </f:section>

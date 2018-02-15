@@ -4,7 +4,7 @@ if (!defined('TYPO3_MODE')) {
 }
 
 \TYPO3\CMS\Extbase\Utility\ExtensionUtility::registerModule(
-    'Qbus.' . $_EXTKEY,
+    'Qbus.SubsiteGenerator',
     'web',
     'subsitegenerator',
     'after:list',
@@ -13,7 +13,7 @@ if (!defined('TYPO3_MODE')) {
     ),
     array(
         'access' => 'admin',
-        'icon'   => 'EXT:' . $_EXTKEY . '/ext_icon.gif',
-        'labels' => 'LLL:EXT:' . $_EXTKEY . '/Resources/Private/Language/locallang.xlf',
+        'icon'   => 'EXT:reports/Resources/Public/Icons/module-reports.svg',
+        'labels' => 'LLL:EXT:subsite_generator/Resources/Private/Language/locallang.xlf',
     )
 );

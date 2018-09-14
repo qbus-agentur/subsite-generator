@@ -89,7 +89,7 @@ class SubsiteGeneratorService
             );
         }
 
-        $storage->createFolder($folderName);
+        $folder = $storage->createFolder($folderName);
 
         $filemount = $this->addFileMount(
             'Subsite ' . $title . '(' . $subdomain . ')',
@@ -114,6 +114,21 @@ class SubsiteGeneratorService
         $tce = $this->createDataHandler($this->data);
         $tce->process_datamap();
         BackendUtility::setUpdateSignal('updatePageTree');
+
+        $_params = [
+            'config' => $config,
+            'rootPageId' => $rootPageId,
+            'domainSuffix' => $domainSuffix,
+            'subdomain' => $subdomain,
+            'urlPath' => $urlPath,
+            'tce' => $tce,
+            'folder' => $folder,
+        ];
+        foreach ($GLOBALS['TYPO3_CONF_VARS']['EXTCONF']['subsite_generator']['postCreate'] ?? [] as $_funcRef) {
+            if ($_funcRef) {
+                GeneralUtility::callUserFunction($_funcRef, $_params, $this);
+            }
+        }
 
         return true;
     }

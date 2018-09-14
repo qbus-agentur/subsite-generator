@@ -3,6 +3,7 @@ namespace Qbus\SubsiteGenerator\Service;
 
 use TYPO3\CMS\Backend\Utility\BackendUtility;
 use TYPO3\CMS\Core\DataHandling\DataHandler;
+use TYPO3\CMS\Core\Utility\ExtensionManagementUtility;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 
 /**
@@ -53,17 +54,31 @@ class SubsiteGeneratorService
         $domainSuffix = $config->get('domain_suffix');
         $storageUid   = $config->get('file_storage_uid');
 
+        $subdomain = trim(str_replace('/', '.', $subdomain), '.');
+        $folderName = trim(str_replace('.', '/', $subdomain), '/');
+        $urlPath = $folderName;
+
         $rootPageId = $this->cloneFromTemplate($templateId, $destPid);
         $db->exec_UPDATEquery(
             'pages',
             'uid=' . intval($rootPageId),
             ['title' => $title, 'hidden' => 0]
         );
-        $db->exec_UPDATEquery(
-            'sys_domain',
-            'pid=' . intval($rootPageId),
-            ['domainName' =>  $subdomain . $domainSuffix]
-        );
+        if (!$domainSuffix) {
+            if (ExtensionManagementUtility::isLoaded('realurl')) {
+                $db->exec_UPDATEquery(
+                    'pages',
+                    'uid=' . intval($rootPageId),
+                    ['tx_realurl_pathsegment' => $urlPath, 'tx_realurl_pathoverride' => 1]
+                );
+            }
+        } else {
+            $db->exec_UPDATEquery(
+                'sys_domain',
+                'pid=' . intval($rootPageId),
+                ['domainName' =>  $subdomain . $domainSuffix]
+            );
+        }
 
         $storageRepository = $this->getStorageRepository();
         $storage = $storageRepository->findByUid($storageUid);
@@ -73,19 +88,20 @@ class SubsiteGeneratorService
                 1454058543
             );
         }
-        $storage->createFolder($subdomain);
+
+        $storage->createFolder($folderName);
 
         $filemount = $this->addFileMount(
-            'Subsite ' . $title,
-            '/' . $subdomain . '/',
+            'Subsite ' . $title . '(' . $subdomain . ')',
+            '/' . $folderName . '/',
             $storageUid
         );
         $begroup = $this->addBEGroup(
-            'Subsite ' . $title,
+            'Subsite ' . $title . '(' . $subdomain . ')',
             [$filemount],
             [$baseGroupId],
             [$rootPageId],
-            'options.defaultUploadFolder = ' . $storageUid . ':' . $subdomain . '/'
+            'options.defaultUploadFolder = ' . $storageUid . ':' . $folderName . '/'
         );
         $this->addBEUser(
             $uAccount,

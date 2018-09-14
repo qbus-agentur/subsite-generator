@@ -22,9 +22,16 @@
 				<div class="clear"></div>
 			</div>
 			<div class="field">
-				<label for="description">Subdomain (Acronym)</label>
+				<f:if condition="{domainSuffix}">
+					<f:then>
+						<label for="subdomain">Subdomain (Acronym) – may use dots</label>
+					</f:then>
+					<f:else>
+						<label for="subdomain">Acronym – may use dots or slashes for hierarchies</label>
+					</f:else>
+				</f:if>
 				<br />
-				<f:form.textfield property="subdomain" name="subdomain" placeholder="acronym" size="20" />
+				<f:form.textfield id="subdomain" property="subdomain" name="subdomain" placeholder="acronym" size="20" />
 				{domainSuffix}
 				<div class="clear"></div>
 			</div>

@@ -4,7 +4,7 @@ template_page_uid = 1
 # cat=basic/all/20; type=int+; label=Page uid where new subsites should be placed under
 target_pid = 0
 
-# cat=basic/all/30; type=string; label=Subdomain suffix (e.g. '.example.com')
+# cat=basic/all/30; type=string; label=Subdomain suffix (e.g. '.example.com'), optional. If not provided realurl path overrides are configured.
 domain_suffix = .example.com
 
 # cat=basic/all/40; type=int+; label=Backend user group id, which newly created backend groups will be member off (if zero, no group is used)

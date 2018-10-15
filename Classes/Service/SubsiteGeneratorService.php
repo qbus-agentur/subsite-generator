@@ -92,12 +92,12 @@ class SubsiteGeneratorService
         $folder = $storage->createFolder($folderName);
 
         $filemount = $this->addFileMount(
-            'Subsite: ' . $subdomain . '(' . $title . ')',
+            'Subsite: ' . $subdomain . ' (' . $title . ')',
             '/' . $folderName . '/',
             $storageUid
         );
         $begroup = $this->addBEGroup(
-            'Subsite: ' . $subdomain . '(' . $title . ')',
+            'Subsite: ' . $subdomain . ' (' . $title . ')',
             [$filemount],
             [$baseGroupId],
             [$rootPageId],

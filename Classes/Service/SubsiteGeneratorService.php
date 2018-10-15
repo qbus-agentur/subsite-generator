@@ -103,13 +103,16 @@ class SubsiteGeneratorService
             [$rootPageId],
             'options.defaultUploadFolder = ' . $storageUid . ':' . $folderName . '/'
         );
-        $this->addBEUser(
-            $uAccount,
-            $uPassword,
-            $uName,
-            $uMail,
-            [$begroup]
-        );
+
+        if ($uAccount) {
+            $this->addBEUser(
+                $uAccount,
+                $uPassword,
+                $uName,
+                $uMail,
+                [$begroup]
+            );
+        }
 
         $tce = $this->createDataHandler($this->data);
         $tce->process_datamap();

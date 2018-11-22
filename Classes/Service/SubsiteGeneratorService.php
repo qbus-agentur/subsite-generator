@@ -89,7 +89,11 @@ class SubsiteGeneratorService
             );
         }
 
-        $folder = $storage->createFolder($folderName);
+        try {
+            $folder = $storage->createFolder($folderName);
+        } catch (\TYPO3\CMS\Core\Resource\Exception\ExistingTargetFolderException $e) {
+            $folder = $storage->getFolder($folderName);
+        }
 
         $filemount = $this->addFileMount(
             'Subsite: ' . $subdomain . ' (' . $title . ')',

@@ -220,6 +220,7 @@ class SubsiteGeneratorService
             'email'     => $email,
             'usergroup' => implode(',', $groups),
             'options'   => 3,
+            'disable'   => 0,
             'pid'       => 0,
         ];
 

@@ -1,6 +1,8 @@
 <?php
 namespace Qbus\SubsiteGenerator\Service;
 
+use TYPO3\CMS\Core\Utility\GeneralUtility;
+use TYPO3\CMS\Core\Configuration\ExtensionConfiguration;
 use TYPO3\CMS\Core\SingletonInterface;
 
 /**
@@ -23,8 +25,8 @@ class ConfigurationService implements SingletonInterface
      */
     public function __construct()
     {
-        if (isset($GLOBALS['TYPO3_CONF_VARS']['EXT']['extConf']['subsite_generator'])) {
-            $extensionConfig = unserialize($GLOBALS['TYPO3_CONF_VARS']['EXT']['extConf']['subsite_generator']);
+        if (isset($GLOBALS['TYPO3_CONF_VARS']['EXTENSIONS']['subsite_generator'])) {
+            $extensionConfig = GeneralUtility::makeInstance(ExtensionConfiguration::class)->get('subsite_generator');
             if (is_array($extensionConfig)) {
                 $this->configuration = $extensionConfig;
             }

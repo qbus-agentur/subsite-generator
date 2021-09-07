@@ -1,15 +1,15 @@
 <?php
-if (!defined('TYPO3_MODE')) {
+if (!defined('TYPO3')) {
     die('Access denied.');
 }
 
 \TYPO3\CMS\Extbase\Utility\ExtensionUtility::registerModule(
-    'Qbus.SubsiteGenerator',
+    'SubsiteGenerator',
     'web',
     'subsitegenerator',
     'after:list',
     array(
-        'SubsiteGenerator' => 'new,create',
+        \Qbus\SubsiteGenerator\Controller\SubsiteGeneratorController::class => 'new,create',
     ),
     array(
         'access' => 'admin',

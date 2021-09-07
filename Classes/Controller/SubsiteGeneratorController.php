@@ -1,6 +1,9 @@
 <?php
 namespace Qbus\SubsiteGenerator\Controller;
 
+use TYPO3\CMS\Extbase\Mvc\Controller\ActionController;
+use Qbus\SubsiteGenerator\Service\ConfigurationService;
+use TYPO3\CMS\Core\Messaging\FlashMessage;
 use TYPO3\CMS\Backend\View\BackendTemplateView;
 use TYPO3\CMS\Extbase\Mvc\View\ViewInterface;
 use TYPO3\CMS\Lang\LanguageService;
@@ -13,7 +16,7 @@ use Qbus\SubsiteGenerator\Service\SubsiteGeneratorService;
  * @author Benjamin Franzke <bfr@qbus.de>
  * @license http://www.gnu.org/licenses/gpl.html GNU General Public License, version 3 or later
  */
-class SubsiteGeneratorController extends \TYPO3\CMS\Extbase\Mvc\Controller\ActionController
+class SubsiteGeneratorController extends ActionController
 {
     /**
      * @var SubsiteGeneratorService
@@ -38,7 +41,7 @@ class SubsiteGeneratorController extends \TYPO3\CMS\Extbase\Mvc\Controller\Actio
      * @param  \Qbus\SubsiteGenerator\Service\ConfigurationService $configurationService
      * @return void
      */
-    public function injectConfigurationService(\Qbus\SubsiteGenerator\Service\ConfigurationService $configurationService)
+    public function injectConfigurationService(ConfigurationService $configurationService)
     {
         $this->configurationService = $configurationService;
     }
@@ -71,7 +74,7 @@ class SubsiteGeneratorController extends \TYPO3\CMS\Extbase\Mvc\Controller\Actio
                 $this->addFlashMessage(
                     'Not all required fields were set',
                     '',
-                    \TYPO3\CMS\Core\Messaging\FlashMessage::ERROR
+                    FlashMessage::ERROR
                 );
                 $this->redirect('new');
             }
@@ -139,7 +142,7 @@ class SubsiteGeneratorController extends \TYPO3\CMS\Extbase\Mvc\Controller\Actio
     }
 
     /**
-     * @return LanguageService
+     * @return \TYPO3\CMS\Core\Localization\LanguageService
      */
     protected function getLanguageService()
     {

@@ -1,6 +1,8 @@
 <?php
 namespace Qbus\SubsiteGenerator\Service;
 
+use TYPO3\CMS\Core\Resource\Exception\ExistingTargetFolderException;
+use TYPO3\CMS\Core\Resource\StorageRepository;
 use TYPO3\CMS\Backend\Utility\BackendUtility;
 use TYPO3\CMS\Core\DataHandling\DataHandler;
 use TYPO3\CMS\Core\Utility\ExtensionManagementUtility;
@@ -91,7 +93,7 @@ class SubsiteGeneratorService
 
         try {
             $folder = $storage->createFolder($folderName);
-        } catch (\TYPO3\CMS\Core\Resource\Exception\ExistingTargetFolderException $e) {
+        } catch (ExistingTargetFolderException $e) {
             $folder = $storage->getFolder($folderName);
         }
 
@@ -266,7 +268,7 @@ class SubsiteGeneratorService
     {
         $tce = GeneralUtility::makeInstance(DataHandler::class);
         $tce->stripslashes_values = 0;
-        $TCAdefaultOverride = $GLOBALS['BE_USER']->getTSConfigProp('TCAdefaults');
+        $TCAdefaultOverride = $GLOBALS['BE_USER']->getTSConfig()['TCAdefaults.'] ?? null;
         if (is_array($TCAdefaultOverride)) {
             $tce->setDefaultsFromUserTS($TCAdefaultOverride);
         }
@@ -288,7 +290,7 @@ class SubsiteGeneratorService
      */
     protected function getStorageRepository()
     {
-        return GeneralUtility::makeInstance(\TYPO3\CMS\Core\Resource\StorageRepository::class);
+        return GeneralUtility::makeInstance(StorageRepository::class);
     }
 
     /**
@@ -296,6 +298,6 @@ class SubsiteGeneratorService
      */
     protected function getConfig()
     {
-        return GeneralUtility::makeInstance(\Qbus\SubsiteGenerator\Service\ConfigurationService::class);
+        return GeneralUtility::makeInstance(ConfigurationService::class);
     }
 }

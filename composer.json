@@ -16,7 +16,7 @@
     ],
     "license": "GPL-2.0+",
     "require": {
-        "typo3/cms-core": "^7.6 || ^8.7"
+        "typo3/cms-core": "^10.4"
     },
     "autoload": {
         "psr-4": {
@@ -29,21 +29,22 @@
         }
     },
     "replace": {
-        "subsite_generator": "self.version",
         "typo3-ter/subsite_generator": "self.version"
     },
     "require-dev": {
-        "typo3/testing-framework": "^2.0",
+        "typo3/testing-framework": "^6.10",
         "php-coveralls/php-coveralls": "^1.0",
-        "typo3/cms": "^8.7",
-        "phpstan/phpstan": "^0.9.1"
+        "typo3/minimal": "^10.4",
+        "typo3/cms-setup": "^10.4",
+        "typo3/cms-beuser": "^10.4",
+        "phpstan/phpstan": "^0.12"
     },
     "config": {
         "vendor-dir": ".build/vendor"
     },
     "extra": {
         "typo3/cms": {
-            "cms-package-dir": "{$vendor-dir}/typo3/cms",
+            "extension-key": "subsite_generator",
             "web-dir": ".build/web"
         },
         "branch-alias": {

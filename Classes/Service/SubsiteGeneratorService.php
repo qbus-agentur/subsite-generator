@@ -1,10 +1,17 @@
 <?php
 namespace Qbus\SubsiteGenerator\Service;
 
+use TYPO3\CMS\Core\Database\ConnectionPool;
+use TYPO3\CMS\Core\Database\Query\Restriction\DeletedRestriction;
+use TYPO3\CMS\Core\Database\Query\Restriction\BackendWorkspaceRestriction;
+use TYPO3\CMS\Core\Resource\Exception\ExistingTargetFolderException;
+use TYPO3\CMS\Core\Resource\StorageRepository;
 use TYPO3\CMS\Backend\Utility\BackendUtility;
 use TYPO3\CMS\Core\DataHandling\DataHandler;
 use TYPO3\CMS\Core\Utility\ExtensionManagementUtility;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
+use TYPO3\CMS\Core\Utility\MathUtility;
+
 
 /**
  * SubsiteGeneratorService
@@ -46,7 +53,7 @@ class SubsiteGeneratorService
         $uMail
     ) {
         $config = $this->getConfig();
-        $db = $this->getDatabaseConnection();
+        $connection = GeneralUtility::makeInstance(ConnectionPool::class)->getConnectionForTable('pages');
 
         $templateId   = $config->get('template_page_uid');
         $destPid      = $config->get('target_pid');
@@ -59,26 +66,34 @@ class SubsiteGeneratorService
         $urlPath = $folderName;
 
         $rootPageId = $this->cloneFromTemplate($templateId, $destPid);
-        $db->exec_UPDATEquery(
-            'pages',
-            'uid=' . intval($rootPageId),
-            ['title' => $title, 'hidden' => 0]
-        );
-        if (!$domainSuffix) {
-            if (ExtensionManagementUtility::isLoaded('realurl')) {
-                $db->exec_UPDATEquery(
-                    'pages',
-                    'uid=' . intval($rootPageId),
-                    ['tx_realurl_pathsegment' => $urlPath, 'tx_realurl_pathoverride' => 1]
-                );
-            }
-        } else {
-            $db->exec_UPDATEquery(
-                'sys_domain',
-                'pid=' . intval($rootPageId),
-                ['domainName' =>  $subdomain . $domainSuffix]
-            );
+        $connection->update('pages', ['title' => $title, 'hidden' => 0], ['uid' => intval($rootPageId)]);
+
+        $queryBuilder = GeneralUtility::makeInstance(ConnectionPool::class)->getQueryBuilderForTable('pages');
+        $queryBuilder
+            ->getRestrictions()
+            ->removeAll()
+            ->add(GeneralUtility::makeInstance(DeletedRestriction::class));
+        $res = $queryBuilder->select('slug')
+                            ->from('pages')
+                            ->where($queryBuilder->expr()->eq('uid', $queryBuilder->createNamedParameter($templateId)))
+                            ->execute();
+        $data = $res->fetch();
+        $currentSlugPrefix = rtrim($data['slug'], '/') . '/';
+
+        if ($domainSuffix) {
+            // @todo: Generate site-record via template
+            // @todo: maybe slugs won't be suffixed with numbers in that case? anyway that'd optional in any case.
         }
+
+        $slug = rtrim(dirname(rtrim($currentSlugPrefix, '/')), '/') . '/' . $urlPath;
+        // @todo: do not use $domainSuffix as condition, but rather check if a site config is available/clonable
+        $connection->update(
+            'pages',
+            ['slug' => '/' . ltrim($slug, '/')],
+            ['uid' => intval($rootPageId)]
+        );
+
+        $this->fixSlugsRecursively((int)$rootPageId, $currentSlugPrefix, rtrim($slug, '/') . '/');
 
         $storageRepository = $this->getStorageRepository();
         $storage = $storageRepository->findByUid($storageUid);
@@ -91,7 +106,7 @@ class SubsiteGeneratorService
 
         try {
             $folder = $storage->createFolder($folderName);
-        } catch (\TYPO3\CMS\Core\Resource\Exception\ExistingTargetFolderException $e) {
+        } catch (ExistingTargetFolderException $e) {
             $folder = $storage->getFolder($folderName);
         }
 
@@ -120,6 +135,7 @@ class SubsiteGeneratorService
 
         $tce = $this->createDataHandler($this->data);
         $tce->process_datamap();
+        $tce->process_cmdmap();
         BackendUtility::setUpdateSignal('updatePageTree');
 
         $_params = [
@@ -140,6 +156,44 @@ class SubsiteGeneratorService
         return true;
     }
 
+    protected function fixSlugsRecursively(int $pid, $currentSlugPrefix, $newSlugPrefix)
+    {
+        $queryBuilder = GeneralUtility::makeInstance(ConnectionPool::class)->getQueryBuilderForTable('pages');
+        $queryBuilder
+            ->getRestrictions()
+            ->removeAll()
+            ->add(GeneralUtility::makeInstance(DeletedRestriction::class));
+
+        $res = $queryBuilder
+            ->select('uid', 'slug')
+            ->from('pages')
+            ->where($queryBuilder->expr()->eq('pid', $queryBuilder->createNamedParameter($pid)))
+            ->execute();
+        $pages = $res->fetchAll();
+
+        $connection = GeneralUtility::makeInstance(ConnectionPool::class)
+            ->getConnectionForTable('pages');
+
+        foreach ($pages as $page) {
+            $slug = $oldSlug = $page['slug'];
+            if (strpos($slug, $currentSlugPrefix) === 0) {
+                $slug = $newSlugPrefix . substr($slug, strlen($currentSlugPrefix));
+
+                $parts = explode('-', $slug);
+                $lastPart = array_pop($parts);
+                // Skip trailing numbers like '/foo/bar/contact-1' into '/foo/bar/contact'
+                if (MathUtility::canBeInterpretedAsInteger($lastPart)) {
+                    $slug = implode('-', $parts);
+                }
+
+                if ($slug !== $oldSlug) {
+                    $connection->update('pages', ['slug' => $slug], ['uid' => intval($page['uid'])]);
+                }
+            }
+            $this->fixSlugsRecursively((int)$page['uid'], $currentSlugPrefix, $newSlugPrefix);
+        }
+    }
+
     /**
      * @param  int $templateId
      * @param  int $destPid
@@ -152,6 +206,7 @@ class SubsiteGeneratorService
 
         $tce = $this->createDataHandler([], $cmd);
         $tce->copyTree = 99;
+        $tce->process_datamap();
         $tce->process_cmdmap();
 
         return $tce->copyMappingArray_merged['pages'][$templateId];
@@ -266,7 +321,7 @@ class SubsiteGeneratorService
     {
         $tce = GeneralUtility::makeInstance(DataHandler::class);
         $tce->stripslashes_values = 0;
-        $TCAdefaultOverride = $GLOBALS['BE_USER']->getTSConfigProp('TCAdefaults');
+        $TCAdefaultOverride = $GLOBALS['BE_USER']->getTSConfig()['TCAdefaults.'] ?? null;
         if (is_array($TCAdefaultOverride)) {
             $tce->setDefaultsFromUserTS($TCAdefaultOverride);
         }
@@ -276,19 +331,11 @@ class SubsiteGeneratorService
     }
 
     /**
-     * @return \TYPO3\CMS\Core\Database\DatabaseConnection
-     */
-    protected function getDatabaseConnection()
-    {
-        return $GLOBALS['TYPO3_DB'];
-    }
-
-    /**
      * @return \TYPO3\CMS\Core\Resource\StorageRepository
      */
     protected function getStorageRepository()
     {
-        return GeneralUtility::makeInstance(\TYPO3\CMS\Core\Resource\StorageRepository::class);
+        return GeneralUtility::makeInstance(StorageRepository::class);
     }
 
     /**
@@ -296,6 +343,6 @@ class SubsiteGeneratorService
      */
     protected function getConfig()
     {
-        return GeneralUtility::makeInstance(\Qbus\SubsiteGenerator\Service\ConfigurationService::class);
+        return GeneralUtility::makeInstance(ConfigurationService::class);
     }
 }

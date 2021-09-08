@@ -35,6 +35,8 @@
         "typo3/testing-framework": "^6.10",
         "php-coveralls/php-coveralls": "^1.0",
         "typo3/minimal": "^10.4",
+        "typo3/cms-setup": "^10.4",
+        "typo3/cms-beuser": "^10.4",
         "phpstan/phpstan": "^0.12"
     },
     "config": {

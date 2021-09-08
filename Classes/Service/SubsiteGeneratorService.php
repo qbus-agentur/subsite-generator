@@ -85,7 +85,7 @@ class SubsiteGeneratorService
         if ($domainSuffix) {
             // @todo: Generate site-record via template
         } else {
-            $slug = dirname(rtrim($currentSlugPrefix, '/')) . '/' . $urlPath;
+            $slug = dirname(rtrim($currentSlugPrefix, '/') . '/.') . $urlPath;
         }
         $connection->update(
             'pages',

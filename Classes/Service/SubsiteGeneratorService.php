@@ -80,13 +80,13 @@ class SubsiteGeneratorService
         $data = $res->fetch();
         $currentSlugPrefix = rtrim($data['slug'], '/') . '/';
 
-        $slug = '';
-        // @todo: do not use $domainSuffix as condition, but rather check if a site config is available/clonable
         if ($domainSuffix) {
             // @todo: Generate site-record via template
-        } else {
-            $slug = dirname(rtrim($currentSlugPrefix, '/') . '/.') . $urlPath;
+            // @todo: maybe slugs won't be suffixed with numbers in that case? anyway that'd optional in any case.
         }
+
+        $slug = rtrim(dirname(rtrim($currentSlugPrefix, '/')), '/') . '/' . $urlPath;
+        // @todo: do not use $domainSuffix as condition, but rather check if a site config is available/clonable
         $connection->update(
             'pages',
             ['slug' => '/' . ltrim($slug, '/')],
